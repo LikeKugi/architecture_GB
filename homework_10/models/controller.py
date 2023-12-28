@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 
 
-class Client(BaseModel):
-    client_id: int
+class BaseClient(BaseModel):
     document: str
     first_name: str
     last_name: str
@@ -10,16 +9,26 @@ class Client(BaseModel):
     birthday: float
 
 
-class Consultation(BaseModel):
-    consultation_id: int
+class Client(BaseClient):
+    client_id: int
+
+
+class BaseConsultation(BaseModel):
     client_id: int
     pet_id: int
     date: float
     description: str
 
 
-class Pet(BaseModel):
-    pet_id: int
+class Consultation(BaseConsultation):
+    consultation_id: int
+
+
+class BasePet(BaseModel):
     client_id: int
     name: str
     birthday: float
+
+
+class Pet(BasePet):
+    pet_id: int
