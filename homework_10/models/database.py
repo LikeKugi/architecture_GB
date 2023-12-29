@@ -8,7 +8,7 @@ class Client(Base):
     __tablename__ = "client"
 
     client_id = Column(Integer, primary_key=True, index=True)
-    document = Column(String, unique=True)
+    document = Column(String)
     first_name = Column(String)
     last_name = Column(String)
     patronymic = Column(String)

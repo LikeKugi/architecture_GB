@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -32,3 +34,24 @@ class BasePet(BaseModel):
 
 class Pet(BasePet):
     pet_id: int
+
+
+class Target(Enum):
+    pets = 'pets'
+    clients = 'clients'
+
+
+class BaseTarget(BaseModel):
+    target: Target
+
+
+class BaseResponse(BaseModel):
+    message: str
+
+
+class Appointment(BaseModel):
+    consultation_id: int
+    date: float
+    description: str
+    client: Client
+    pet: Pet

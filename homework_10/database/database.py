@@ -24,14 +24,15 @@ def get_db():
         db.close()
 
 
-def create_new():
-    db = SessionLocal()
+def create_new_clients(db):
     try:
         utils.create_clients(data.clients, db=db)
-        utils.create_pets(data.pets, db=db)
     finally:
         db.close()
 
 
-if __name__ == '__main__':
-    create_new()
+def create_new_pets(db):
+    try:
+        utils.create_pets(data.pets, db=db)
+    finally:
+        db.close()

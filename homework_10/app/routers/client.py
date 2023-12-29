@@ -12,23 +12,22 @@ router = APIRouter(
 
 @router.get('/', response_model=list[mct.Client])
 async def get_clients(limit: int = 5, offset: int = 0, db: Session = Depends(database.get_db)):
-    return db.query(mdb.Client).all()[offset:offset + limit]
+    return db.query(mdb.Client).limit(limit).offset(offset)
 
 
 @router.post('/', response_model=mct.Client)
 async def post_clients(client: mct.BaseClient, db: Session = Depends(database.get_db)):
-    client = mdb.Client(document=client.document, first_name=client.first_name, last_name=client.last_name,
+    person = mdb.Client(document=client.document, first_name=client.first_name, last_name=client.last_name,
                         patronymic=client.patronymic, birthday=client.birthday)
-    db.add(client)
+    db.add(person)
     db.commit()
-    db.refresh(client)
-    return client
+    db.refresh(person)
+    return person
 
 
 @router.put('/', response_model=mct.Client)
 async def put_clients(client: mct.Client, db: Session = Depends(database.get_db)):
-    person = db.query(mdb.Client).filter(mdb.Client.client_id == client.client_id).first()
-    print(str(person), client)
+    person: mdb.Client = db.query(mdb.Client).filter(mdb.Client.client_id == client.client_id).first()
     if not person:
         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
     person.document = client.document
@@ -42,8 +41,8 @@ async def put_clients(client: mct.Client, db: Session = Depends(database.get_db)
 
 
 @router.delete('/{client_id}', response_model=mct.Client)
-async def delete_clients(client_id: int, db: Session = Depends(database.get_db)):
-    client = db.query(mdb.Client).filter(mdb.Client.client_id == client_id).first()
+async def delete_client(client_id: int, db: Session = Depends(database.get_db)):
+    client: mdb.Client = db.query(mdb.Client).filter(mdb.Client.client_id == client_id).first()
     if not client:
         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
     db.delete(client)
@@ -53,7 +52,7 @@ async def delete_clients(client_id: int, db: Session = Depends(database.get_db))
 
 @router.get('/{client_id}', response_model=mct.Client)
 async def get_client(client_id: int, db: Session = Depends(database.get_db)):
-    client = db.query(mdb.Client).filter(mdb.Client.client_id == client_id).first()
+    client: mdb.Client = db.query(mdb.Client).filter(mdb.Client.client_id == client_id).first()
     if not client:
         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
     return client

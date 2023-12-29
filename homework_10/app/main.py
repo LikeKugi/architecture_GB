@@ -1,10 +1,14 @@
-from fastapi import FastAPI, Body
-from .routers import client
+from fastapi import FastAPI, Body, Depends
+from .routers import client, pets
+from models import controller as mct
+from sqlalchemy.orm import Session
+from database import database
 
 app = FastAPI(
     title="Vet Clinic"
 )
 app.include_router(client.router)
+app.include_router(pets.router)
 
 
 @app.get("/")
@@ -25,3 +29,17 @@ async def post_hello(name: str, body=Body(None)):
     else:
         naming = body
     return {"message": f"Hello {naming} from {name}"}
+
+
+@app.post('/fill', response_model=mct.BaseResponse)
+async def fill_db(body: mct.BaseTarget, db: Session = Depends(database.get_db)):
+    target = body.target
+    match target:
+        case target.pets:
+            database.create_new_pets(db)
+            return {"message": "Created Pets"}
+        case target.clients:
+            database.create_new_clients(db)
+            return {"message": "Created Clients"}
+        case _:
+            return {"message": "Hello World"}
